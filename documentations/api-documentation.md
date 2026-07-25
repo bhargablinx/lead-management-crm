@@ -4,7 +4,7 @@ This document contains specifications for the Lead Management CRM REST API.
 
 ---
 
-## 🔑 Global Specifications
+## Global Specifications
 
 ### Base URL
 ```
@@ -18,7 +18,7 @@ Authentication is handled using JSON Web Tokens (JWT). The API checks for the to
 
 ---
 
-### 📦 Standard Response Wrappers
+### Standard Response Wrappers
 
 All successful API responses return a status code and follow this format:
 ```json
@@ -43,7 +43,7 @@ All error responses return a status code and follow this format:
 
 ---
 
-### 🛡️ RBAC Permissions Matrix
+### RBAC Permissions Matrix
 
 | Endpoint | Method | Authentication Required | Allowed Roles | Description |
 |---|---|---|---|---|
@@ -61,6 +61,7 @@ All error responses return a status code and follow this format:
 | `/users/:id` | `DELETE` | Yes | Admin | Delete user (cannot delete self) |
 | `/leads` | `POST` | Yes | All | Create a lead |
 | `/leads` | `GET` | Yes | All | List leads (Members only see assigned leads) |
+| `/leads/public/:orgSlug` | `POST` | No | Public | Submit lead via public landing page |
 | `/leads/:id` | `GET` | Yes | Admin, Assignee | Get lead by ID |
 | `/leads/:id` | `PATCH` | Yes | Admin, Assignee | Update lead (Members cannot reassign) |
 | `/leads/:id` | `DELETE` | Yes | Admin | Delete lead and all notes/activities |
@@ -75,9 +76,9 @@ All error responses return a status code and follow this format:
 
 ---
 
-## 🚀 Endpoint Reference
+## Endpoint Reference
 
-### 🔐 1. Authentication
+### 1. Authentication
 
 #### Register Organization & Admin
 *   **Method**: `POST`
@@ -193,9 +194,13 @@ All error responses return a status code and follow this format:
 
 ---
 
-### 🏢 2. Organization Management
+*Note: Emojis have been removed from this document as requested.*
 
-#### Get Organization details
+---
+
+### 2. Organization Management
+
+#### Get Organization Details
 *   **Method**: `GET`
 *   **Path**: `/organizations`
 *   **Response (200 OK)**:
@@ -215,7 +220,7 @@ All error responses return a status code and follow this format:
     }
     ```
 
-#### Update Organization settings
+#### Update Organization Settings
 *   **Method**: `PATCH`
 *   **Path**: `/organizations`
 *   **Request Body** (All fields optional):
@@ -242,9 +247,22 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Delete Organization (Admin Only)
+*   **Method**: `DELETE`
+*   **Path**: `/organizations`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Organization deleted successfully",
+      "data": null
+    }
+    ```
+
 ---
 
-### 👥 3. User Management
+### 3. User Management
 
 #### Create User (Admin Only)
 *   **Method**: `POST`
@@ -303,6 +321,28 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Get User Profile by ID (Admin or Self)
+*   **Method**: `GET`
+*   **Path**: `/users/:id`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "User retrieved successfully",
+      "data": {
+        "_id": "60d0fed65311236168a109ce",
+        "organizationId": "60d0fe4f5311236168a109c9",
+        "name": "John Member",
+        "email": "john@acme.com",
+        "role": "member",
+        "isActive": true,
+        "createdAt": "2026-07-25T11:20:00.000Z",
+        "updatedAt": "2026-07-25T11:20:00.000Z"
+      }
+    }
+    ```
+
 #### Update User
 *   **Method**: `PATCH`
 *   **Path**: `/users/:id`
@@ -330,9 +370,22 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Delete User (Admin Only)
+*   **Method**: `DELETE`
+*   **Path**: `/users/:id`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "User deleted successfully",
+      "data": null
+    }
+    ```
+
 ---
 
-### 📈 4. Lead Management
+### 4. Lead Management
 
 #### Create Lead
 *   **Method**: `POST`
@@ -373,6 +426,43 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Submit Lead via Public Capture Form
+*   **Method**: `POST`
+*   **Path**: `/leads/public/:orgSlug`
+*   **Request Body**:
+    ```json
+    {
+      "firstName": "Anonymous",
+      "lastName": "Prospect",
+      "email": "anonymous@prospect.com",
+      "phone": "+1122334455",
+      "company": "Prospect Corp",
+      "source": "Public Form",
+      "description": "Submitted via public tenant capture form."
+    }
+    ```
+*   **Response (201 Created)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 201,
+      "message": "Public lead created successfully",
+      "data": {
+        "_id": "60d100345311236168a109db",
+        "organizationId": "60d0fe4f5311236168a109c9",
+        "firstName": "Anonymous",
+        "lastName": "Prospect",
+        "email": "anonymous@prospect.com",
+        "phone": "+1122334455",
+        "company": "Prospect Corp",
+        "source": "Public Form",
+        "status": "new",
+        "createdAt": "2026-07-25T11:35:00.000Z",
+        "updatedAt": "2026-07-25T11:35:00.000Z"
+      }
+    }
+    ```
+
 #### List Leads
 *   **Method**: `GET`
 *   **Path**: `/leads`
@@ -408,6 +498,32 @@ All error responses return a status code and follow this format:
           "limit": 10,
           "pages": 1
         }
+      }
+    }
+    ```
+
+#### Get Lead Details (Admin or Assignee)
+*   **Method**: `GET`
+*   **Path**: `/leads/:id`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Lead retrieved successfully",
+      "data": {
+        "_id": "60d100345311236168a109da",
+        "organizationId": "60d0fe4f5311236168a109c9",
+        "firstName": "Mark",
+        "lastName": "Spencer",
+        "email": "mark@spencer.com",
+        "phone": "+1234567890",
+        "company": "Spencer Media",
+        "source": "Website",
+        "status": "new",
+        "assignedTo": null,
+        "createdAt": "2026-07-25T11:30:00.000Z",
+        "updatedAt": "2026-07-25T11:30:00.000Z"
       }
     }
     ```
@@ -461,9 +577,22 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Delete Lead (Admin Only)
+*   **Method**: `DELETE`
+*   **Path**: `/leads/:id`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Lead deleted successfully",
+      "data": null
+    }
+    ```
+
 ---
 
-### 📝 5. Note Management
+### 5. Note Management
 
 #### Add Lead Note
 *   **Method**: `POST`
@@ -474,7 +603,7 @@ All error responses return a status code and follow this format:
       "content": "Followed up via phone. Interested in setting up a demo."
     }
     ```
-*   **Response (210 Created)**:
+*   **Response (201 Created)**:
     ```json
     {
       "success": true,
@@ -521,7 +650,7 @@ All error responses return a status code and follow this format:
     }
     ```
 
-#### Update Note Content
+#### Update Note Content (Owner Only)
 *   **Method**: `PATCH`
 *   **Path**: `/notes/:id`
 *   **Request Body**:
@@ -548,9 +677,22 @@ All error responses return a status code and follow this format:
     }
     ```
 
+#### Delete Note (Owner or Admin Only)
+*   **Method**: `DELETE`
+*   **Path**: `/notes/:id`
+*   **Response (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "statusCode": 200,
+      "message": "Note deleted successfully",
+      "data": null
+    }
+    ```
+
 ---
 
-### ⏱️ 6. Activity Timeline
+### 6. Activity Timeline
 
 #### Get Lead Activities
 *   **Method**: `GET`
@@ -613,7 +755,7 @@ All error responses return a status code and follow this format:
 
 ---
 
-### 🏥 7. Health Check
+### 7. Health Check
 
 #### Application Health Status
 *   **Method**: `GET`
