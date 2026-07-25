@@ -1,5 +1,6 @@
 import { Lead, LeadStatus } from "../models/lead.model.js";
 import { User, UserRole } from "../models/user.model.js";
+import { Organization } from "../models/organization.model.js";
 import { Types } from "mongoose";
 import { Note } from "../models/note.model.js";
 import { Activity, ActivityType } from "../models/activity.model.js";
@@ -414,6 +415,79 @@ export const assignLead = asyncHandler(async (req: Request, res: Response) => {
         new ApiResponse({
             statusCode: 200,
             message: "Lead assigned successfully",
+            data: lead,
+        })
+    );
+});
+
+export const createPublicLead = asyncHandler(async (req: Request, res: Response) => {
+    const orgSlug = req.params.orgSlug as string | undefined;
+    const { firstName, lastName, email, phone, company, notes, source } = req.body;
+
+    if (!orgSlug) {
+        throw new ApiError({
+            message: "Organization slug is required",
+            statusCode: 400,
+            error: "Bad Request",
+        });
+    }
+
+    const organization = await Organization.findOne({ slug: orgSlug.toLowerCase().trim() });
+    if (!organization) {
+        throw new ApiError({
+            message: "Organization not found",
+            statusCode: 404,
+            error: "Not Found",
+        });
+    }
+
+    if (!organization.isActive) {
+        throw new ApiError({
+            message: "Organization is suspended",
+            statusCode: 403,
+            error: "Forbidden",
+        });
+    }
+
+    if (!firstName || !email) {
+        throw new ApiError({
+            message: "First name and email are required",
+            statusCode: 400,
+            error: "Bad Request",
+        });
+    }
+
+    // Create the lead
+    const lead = await Lead.create({
+        organizationId: organization._id,
+        firstName: firstName.trim(),
+        lastName: lastName ? lastName.trim() : undefined,
+        email: email.toLowerCase().trim(),
+        phone: phone ? phone.trim() : undefined,
+        company: company ? company.trim() : undefined,
+        source: source ? source.trim() : "Public Form",
+        status: LeadStatus.NEW,
+        notes: notes ? notes.trim() : undefined,
+    });
+
+    // Find admin user to log activity
+    const adminUser = await User.findOne({ organizationId: organization._id, role: UserRole.ADMIN });
+    const logUserId = adminUser ? adminUser._id : null;
+
+    if (logUserId) {
+        await logActivity({
+            organizationId: organization._id as any,
+            leadId: lead._id as any,
+            userId: logUserId as any,
+            type: ActivityType.LEAD_CREATED,
+            description: `Lead created via public form for ${lead.firstName} ${lead.lastName || ""}`.trim(),
+        });
+    }
+
+    res.status(201).json(
+        new ApiResponse({
+            statusCode: 201,
+            message: "Lead submitted successfully",
             data: lead,
         })
     );

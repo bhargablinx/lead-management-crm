@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { createLead, getLeads, getLeadById, updateLead, deleteLead, assignLead } from "../controllers/lead.controller.js";
+import { createLead, getLeads, getLeadById, updateLead, deleteLead, assignLead, createPublicLead } from "../controllers/lead.controller.js";
 import { createNote, getLeadNotes } from "../controllers/note.controller.js";
 import { getLeadActivities } from "../controllers/activity.controller.js";
 import { authenticateUser, authorizeRoles } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+
+// Public Lead endpoint (requires no authentication)
+router.post("/public/:orgSlug", createPublicLead);
 
 // Base Lead endpoints
 router.post("/", authenticateUser, createLead);

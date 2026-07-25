@@ -9,6 +9,7 @@ import type {
     Note,
     CreateNotePayload,
     Activity,
+    PublicLeadPayload,
 } from "@/lib/types";
 
 //  * Retrieves a list of leads belonging to the user's organization, with optional filters, search, sorting, and pagination.
@@ -62,5 +63,18 @@ export async function createLeadNote(id: string, payload: CreateNotePayload): Pr
 //  * Retrieves all activity history associated with a specific lead.
 export async function getLeadActivities(id: string): Promise<ApiResponse<Activity[]>> {
     const response = await api.get<ApiResponse<Activity[]>>(`/leads/${id}/activities`);
+    return response.data;
+}
+
+/**
+ * Submits a public lead form on behalf of a specific organization.
+ * @param orgSlug The organization slug
+ * @param payload The public lead submission details
+ */
+export async function submitPublicLead(
+    orgSlug: string,
+    payload: PublicLeadPayload
+): Promise<ApiResponse<Lead>> {
+    const response = await api.post<ApiResponse<Lead>>(`/leads/public/${orgSlug}`, payload);
     return response.data;
 }

@@ -219,3 +219,12 @@ export interface RegisterResponseData {
 export interface LoginResponseData {
     user: Omit<User, "password">;
 }
+
+export interface PublicLeadPayload {
+    firstName: string;
+    lastName?: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    notes?: string;
+}
