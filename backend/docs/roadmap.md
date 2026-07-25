@@ -22,7 +22,7 @@ Since this is a scoring-based project, the roadmap should prioritize the highest
 - [x] Draw ER Diagram
 - [ ] Define user roles
 - [ ] Define lead lifecycle
-- [ ] Define API endpoints
+- [x] Define API endpoints
 
 ---
 
