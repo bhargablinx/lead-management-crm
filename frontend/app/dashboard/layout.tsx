@@ -79,6 +79,16 @@ export default function DashboardLayout({
                             >
                                 Dashboard
                             </Link>
+                            <Link
+                                href="/dashboard/leads"
+                                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                                    pathname.startsWith("/dashboard/leads")
+                                        ? "text-foreground font-semibold"
+                                        : "text-muted-foreground"
+                                }`}
+                            >
+                                Leads
+                            </Link>
                             {user?.role === "admin" && (
                                 <Link
                                     href="/dashboard/users"
