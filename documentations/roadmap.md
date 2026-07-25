@@ -20,8 +20,8 @@ Since this is a scoring-based project, the roadmap should prioritize the highest
 - [x] Create project board (GitHub Projects)
 - [x] Define folder structure
 - [x] Draw ER Diagram
-- [ ] Define user roles
-- [ ] Define lead lifecycle
+- [x] Define user roles
+- [x] Define lead lifecycle
 - [x] Define API endpoints
 
 ---
@@ -39,13 +39,13 @@ Since this is a scoring-based project, the roadmap should prioritize the highest
 
 ### Frontend
 
-- [ ] Next.js
-- [ ] Tailwind CSS
-- [ ] shadcn/ui
-- [ ] Redux Toolkit / TanStack Query
-- [ ] Axios
-- [ ] Protected routing
-- [ ] Theme
+- [x] Next.js
+- [x] Tailwind CSS
+- [x] shadcn/ui
+- [x] Redux Toolkit / TanStack Query
+- [x] Axios
+- [x] Protected routing
+- [x] Theme
 
 ---
 
@@ -171,7 +171,7 @@ Features
 
 - [ ] View all leads
 - [ ] Search
-- [ ] Filter
+- [] Filter
 - [ ] Pagination
 - [ ] Assign lead
 - [ ] Delete lead
