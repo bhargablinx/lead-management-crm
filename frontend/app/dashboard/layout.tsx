@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/store";
 import { logoutUser } from "@/lib/store/authSlice";
@@ -13,6 +14,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
+    const pathname = usePathname();
     const dispatch = useAppDispatch();
     const { isAuthenticated, loading, user } = useAppSelector((state) => state.auth);
 
@@ -56,13 +58,40 @@ export default function DashboardLayout({
             <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/95 backdrop-blur-sm">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     {/* Left: Brand/Logo */}
-                    <div className="flex items-center space-x-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-                            L
-                        </div>
-                        <span className="font-bold text-lg tracking-tight hidden sm:inline-block">
-                            Lead Management CRM
-                        </span>
+                    <div className="flex items-center space-x-8">
+                        <Link href="/dashboard" className="flex items-center space-x-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
+                                L
+                            </div>
+                            <span className="font-bold text-lg tracking-tight hidden sm:inline-block">
+                                Lead Management CRM
+                            </span>
+                        </Link>
+
+                        <nav className="flex items-center space-x-4">
+                            <Link
+                                href="/dashboard"
+                                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                                    pathname === "/dashboard"
+                                        ? "text-foreground font-semibold"
+                                        : "text-muted-foreground"
+                                }`}
+                            >
+                                Dashboard
+                            </Link>
+                            {user?.role === "admin" && (
+                                <Link
+                                    href="/dashboard/users"
+                                    className={`text-sm font-medium transition-colors hover:text-foreground ${
+                                        pathname.startsWith("/dashboard/users")
+                                            ? "text-foreground font-semibold"
+                                            : "text-muted-foreground"
+                                    }`}
+                                >
+                                    Users
+                                </Link>
+                            )}
+                        </nav>
                     </div>
 
                     {/* Right: User Profile & Actions */}
