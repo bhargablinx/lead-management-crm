@@ -19,7 +19,7 @@ Since this is a scoring-based project, the roadmap should prioritize the highest
 - [ ] Initialize README
 - [x] Create project board (GitHub Projects)
 - [x] Define folder structure
-- [ ] Draw ER Diagram
+- [x] Draw ER Diagram
 - [ ] Define user roles
 - [ ] Define lead lifecycle
 - [ ] Define API endpoints
@@ -30,15 +30,12 @@ Since this is a scoring-based project, the roadmap should prioritize the highest
 
 ### Backend
 
-- [ ] Express + TypeScript
-- [ ] Prisma
-- [ ] PostgreSQL
-- [ ] ESLint
-- [ ] Prettier
-- [ ] Environment validation
-- [ ] Logging
-- [ ] Global error handler
-- [ ] Health check endpoint
+- [x] Express + TypeScript
+- [x] Prettier
+- [x] Environment validation
+- [x] Logging
+- [x] Global error handler
+- [x] Health check endpoint
 
 ### Frontend
 
@@ -109,21 +106,21 @@ RefreshToken (optional)
 
 ### Backend
 
-- [ ] Register Admin
-- [ ] Login
-- [ ] Logout
-- [ ] JWT Authentication
-- [ ] Password hashing
-- [ ] Refresh token (optional)
-- [ ] Auth middleware
-- [ ] Role middleware
+- [x] Register Admin
+- [x] Login
+- [x] Logout
+- [x] JWT Authentication
+- [x] Password hashing
+- [x] Refresh token (optional)
+- [x] Auth middleware
+- [x] Role middleware
 
 ### Frontend
 
-- [ ] Login page
-- [ ] Auth context/store
-- [ ] Protected routes
-- [ ] Session persistence
+- [x] Login page
+- [x] Auth context/store
+- [x] Protected routes
+- [x] Session persistence
 
 ---
 
@@ -131,11 +128,11 @@ RefreshToken (optional)
 
 ### Admin Features
 
-- [ ] Create member
-- [ ] List members
-- [ ] Update member
-- [ ] Delete member
-- [ ] View member details
+- [x] Create member
+- [x] List members
+- [x] Update member
+- [x] Delete member
+- [x] View member details
 
 Permissions
 
