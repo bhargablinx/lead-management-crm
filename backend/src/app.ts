@@ -14,7 +14,7 @@ const app: Express = express();
 
 app.use(
     cors({
-        origin: process.env.CORS?.split(","),
+        origin: process.env.CORS?.split(",").map(origin => origin.trim()),
         credentials: true,
     })
 );
