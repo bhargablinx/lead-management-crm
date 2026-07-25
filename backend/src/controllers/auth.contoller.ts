@@ -164,8 +164,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
                 message: "Login successful",
                 data: {
                     user: userWithoutPassword,
-                    accessToken,
-                    refreshToken,
                 },
             })
         );
