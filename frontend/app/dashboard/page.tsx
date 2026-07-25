@@ -7,6 +7,7 @@ import { fetchLeads, addNewLead, editLead, removeLead } from "@/lib/store/leadsS
 import { fetchUsers } from "@/lib/store/usersSlice";
 import { getActivities } from "@/lib/api/activities";
 import { getLeadNotes, createLeadNote } from "@/lib/api/leads";
+import { getOrganization } from "@/lib/api/organizations";
 import StatsCards from "@/components/dashboard/StatsCards";
 import LeadPipeline from "@/components/dashboard/LeadPipeline";
 import RecentActivities from "@/components/dashboard/RecentActivities";
@@ -29,8 +30,12 @@ import {
     Mail,
     Phone,
     Briefcase,
+    Share2,
+    Copy,
+    Check,
+    ExternalLink,
 } from "lucide-react";
-import type { Lead, Activity, Note, CreateLeadPayload, UpdateLeadPayload } from "@/lib/types";
+import type { Lead, Activity, Note, CreateLeadPayload, UpdateLeadPayload, Organization } from "@/lib/types";
 
 export default function DashboardPage() {
     const dispatch = useAppDispatch();
@@ -45,6 +50,25 @@ export default function DashboardPage() {
     const [newNoteContent, setNewNoteContent] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [notesLoading, setNotesLoading] = useState(false);
+    const [organization, setOrganization] = useState<Organization | null>(null);
+    const [copied, setCopied] = useState(false);
+
+    const copyFormLink = () => {
+        if (!organization) return;
+        const link = `${window.location.origin}/public/${organization.slug}`;
+        navigator.clipboard.writeText(link);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    // Load organization details
+    useEffect(() => {
+        getOrganization()
+            .then((res) => {
+                if (res.success) setOrganization(res.data);
+            })
+            .catch(() => { });
+    }, []);
 
     const {
         register: registerCreate,
@@ -179,6 +203,57 @@ export default function DashboardPage() {
                     <Plus className="h-4 w-4" /> Create Lead
                 </Button>
             </div>
+
+            {/* Public Link Card */}
+            {organization && (
+                <Card className="border-primary/20 bg-primary/5 shadow-sm">
+                    <CardContent className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <Share2 className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-0.5 text-left">
+                                <h3 className="font-semibold text-foreground text-sm">Public Lead Capture Link</h3>
+                                <p className="text-xs text-muted-foreground">
+                                    Share this link with prospects to automatically capture leads into your CRM.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                            <code className="text-xs px-2.5 py-1.5 bg-background border rounded-md font-mono select-all truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+                                {`${typeof window !== "undefined" ? window.location.origin : ""}/public/${organization.slug}`}
+                            </code>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 gap-1.5 shrink-0"
+                                onClick={copyFormLink}
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="h-3.5 w-3.5 text-emerald-500" />
+                                        <span>Copied!</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="h-3.5 w-3.5" />
+                                        <span>Copy Link</span>
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 gap-1.5 shrink-0"
+                                onClick={() => window.open(`/public/${organization.slug}`, "_blank", "noopener,noreferrer")}
+                            >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">Open</span>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* KPI Cards */}
             <StatsCards leads={leads} />
